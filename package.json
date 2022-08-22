@@ -9,8 +9,7 @@
   "author": "gcapozzo",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.2.0",
-    "dotenv": "^16.0.1"
+    "discord.js": "^14.2.0"
   },
   "devDependencies": {
     "eslint": "^8.22.0"
