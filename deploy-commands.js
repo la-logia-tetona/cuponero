@@ -37,6 +37,11 @@ const agregarcupon = new SlashCommandBuilder()
 		option
 			.setName('descripcion')
 			.setDescription('Descripcion del cupon, no escribas el martin fierro!')
+			.setRequired(false))
+	.addStringOption(option =>
+		option
+			.setName('valido')
+			.setDescription('Fecha de vencimiento del cupon, si es que tiene!')
 			.setRequired(false));
 
 const commands = [
