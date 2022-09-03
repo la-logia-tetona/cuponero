@@ -12,22 +12,14 @@ class SearchCommand extends Command {
 			const storeName = interaction.options.getString('tienda');
 			const coupons = await this.searchDAO.findCoupons(storeName);
 			if (!coupons) {
-				interaction.reply('Ocurrio un error al obtener los cupones para ' + storeName)
-					.then()
-					.catch(console.error);
-				return;
+				Command.reply(interaction, 'Ocurrio un error al obtener los cupones para ' + storeName);
 			}
-			if (coupons.length === 0) {
-				interaction.reply('No hay cupones para la tienda ' + storeName)
-					.then()
-					.catch(console.error);
+			else if (coupons.length === 0) {
+				Command.reply(interaction, 'No hay cupones para la tienda ' + storeName);
 			}
 			else {
-				const replyStrings = this.toReplyStrings(coupons);
-				interaction.reply('Cupones de **' + storeName + '**')
-					.then()
-					.catch(console.error);
-				replyStrings.forEach(replyString => interaction.channel.send(replyString));
+				Command.reply(interaction, 'Cupones de **' + storeName + '**');
+				this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
 			}
 		}
 		else {
@@ -57,7 +49,7 @@ class SearchCommand extends Command {
 	// (13) CUPONSTAR2022 | descripcion
 	// (13) CUPONSTAR2022 | 9/5/2022 | descripcion
 	parseCouponRow(row) {
-		let coupon = '(' + String(row.id) + ') ' + String(row.code);
+		let coupon = '(' + String(row.id) + ') **' + String(row.code) + '**';
 		if (row.valid_until) {
 			coupon = coupon.concat(' | ', row.valid_until);
 		}

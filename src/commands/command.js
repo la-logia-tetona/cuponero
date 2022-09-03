@@ -5,7 +5,11 @@ class Command {
 
 	async handleInteraction(interaction) {
 		console.log(interaction);
-		interaction.reply('Respuesta al comando no definida')
+		Command.reply(interaction, 'Respuesta al comando no definida');
+	}
+
+	static reply(interaction, content) {
+		interaction.reply(content)
 			.then()
 			.catch(console.err);
 	}

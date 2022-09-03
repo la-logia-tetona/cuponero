@@ -6,7 +6,7 @@ const selectCoupons = `
 SELECT c.id, c.code, c.valid_until, c.description 
 FROM coupon c
 JOIN public.store s ON s.id = c.store_id
-WHERE s.name LIKE $1;`;
+WHERE lower(s.name) LIKE lower($1);`;
 
 const addCoupon = `
 INSERT INTO coupon (store_id, code, description, valid_until) VALUES ($1,$2,$3,$4);
