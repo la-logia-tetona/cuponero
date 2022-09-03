@@ -21,12 +21,10 @@ class StoreDAO extends DAO {
 		super();
 	}
 
-	async addStore(name) {
-		return this.query(addStore, [name]);
-	}
-
-	async addStoreWithLink(name, link) {
-		return this.query(addStoreWithLink, [name, link]);
+	async addStore(name, link) {
+		return link ?
+			this.query(addStoreWithLink, [name, link]) :
+			this.query(addStore, [name]);
 	}
 
 	async getStoreById(store_id) {
