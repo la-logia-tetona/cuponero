@@ -1,6 +1,6 @@
+require('dotenv').config({ path: 'deploy/.env' });
 const { SlashCommandBuilder, Routes } = require('discord.js');
 const { REST } = require('@discordjs/rest');
-const { clientId, guildId, token } = require('./deploy/config.json');
 
 const buscar = new SlashCommandBuilder()
 	.setName('buscar')
@@ -18,7 +18,12 @@ const agregartienda = new SlashCommandBuilder()
 		option
 			.setName('tienda')
 			.setDescription('Nombre de la tienda a agregar!')
-			.setRequired(true));
+			.setRequired(true))
+	.addStringOption(option =>
+		option
+			.setName('link')
+			.setDescription('Link de la tienda a agregar!')
+			.setRequired(false));
 
 const agregarcupon = new SlashCommandBuilder()
 	.setName('agregarcupon')
@@ -51,8 +56,8 @@ const commands = [
 ]
 	.map(command => command.toJSON());
 
-const rest = new REST({ version: '10' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID), { body: commands })
 	.then(() => console.log('Successfully registered application commands.'))
 	.catch(console.error);
