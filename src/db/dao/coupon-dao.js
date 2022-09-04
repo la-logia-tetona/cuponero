@@ -9,7 +9,7 @@ JOIN public.store s ON s.id = c.store_id
 WHERE lower(s.name) LIKE lower($1);`;
 
 const addCoupon = `
-INSERT INTO coupon (store_id, code, description, valid_until) VALUES ($1,$2,$3,$4);
+INSERT INTO coupon (store_id, code, valid_until, description) VALUES ($1,$2,$3,$4);
 `;
 
 class CouponDAO extends DAO {
@@ -29,11 +29,12 @@ class CouponDAO extends DAO {
 		return null;
 	}
 
-	async addCoupon(code, store, date = null, description = null) {
+	async addCoupon(store, code, date = null, description = null) {
+		const formattedDate = date ? date.toSQLDate() : null ;
 		if (isNumber(store)) {
 			const toAddCoupon = await this.storeDAO.getStoreById(store);
 			if (toAddCoupon && toAddCoupon.length === 1) {
-				const answer = await this.query(addCoupon, [store, code, date, description]);
+				const answer = await this.query(addCoupon, [store, code, formattedDate, description]);
 				if (answer) {
 					return 'Se agrego el cupon a la tienda';
 				}
@@ -54,7 +55,7 @@ class CouponDAO extends DAO {
 			if (byName.length === 1) {
 				const store_id = byName[0].id;
 				return (
-					await this.query(addCoupon, [store_id, code, date, description]) ?
+					await this.query(addCoupon, [store_id, code, formattedDate, description]) ?
 						'Se agrego el cupon a la tienda' :
 						'Ocurrio un error al intentar agregar el cupon'
 				);
