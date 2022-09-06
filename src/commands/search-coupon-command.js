@@ -1,16 +1,16 @@
 const { CouponDAO } = require('../db/dao/coupon-dao');
 const { Command } = require('./command');
 
-class SearchCommand extends Command {
+class SearchCouponCommand extends Command {
 	constructor(command) {
 		super(command);
-		this.searchDAO = new CouponDAO();
+		this.couponDAO = new CouponDAO();
 	}
 
 	async handleInteraction(interaction) {
-		if (interaction.commandName === 'buscar') {
-			const storeName = interaction.options.getString('tienda');
-			const coupons = await this.searchDAO.findCoupons(storeName);
+		if (interaction.commandName === 'buscarcupones') {
+			const storeName = interaction.options.getString('nombretienda');
+			const coupons = await this.couponDAO.findCoupons(storeName);
 			if (!coupons) {
 				Command.reply(interaction, 'Ocurrio un error al obtener los cupones para ' + storeName);
 			}
@@ -18,7 +18,7 @@ class SearchCommand extends Command {
 				Command.reply(interaction, 'No hay cupones para la tienda ' + storeName);
 			}
 			else {
-				Command.reply(interaction, 'Cupones de **' + storeName + '**');
+				await Command.reply(interaction, 'Cupones de **' + storeName + '**');
 				this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
 			}
 		}
@@ -60,4 +60,4 @@ class SearchCommand extends Command {
 	}
 }
 
-exports.SearchCommand = SearchCommand;
+exports.SearchCouponCommand = SearchCouponCommand;

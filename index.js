@@ -5,16 +5,18 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { AddCouponCommand } = require('./src/commands/add-coupon-command');
 const { AddStoreCommand } = require('./src/commands/add-store-command');
 const { NoCommand } = require('./src/commands/no-command');
-const { SearchCommand } = require('./src/commands/search-command');
+const { SearchCouponCommand } = require('./src/commands/search-coupon-command');
+const { SearchStoreCommand } = require('./src/commands/search-store-command');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 const commandHandler =
-new SearchCommand(
+new SearchCouponCommand(
 	new AddCouponCommand(
 		new AddStoreCommand(
-			new NoCommand(null))));
+			new SearchStoreCommand(
+				new NoCommand(null)))));
 
 // When the client is ready, run this code (only once)
 client.once('ready', () => {

@@ -2,16 +2,25 @@ require('dotenv').config({ path: 'deploy/.env' });
 const { SlashCommandBuilder, Routes } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 
-const buscar = new SlashCommandBuilder()
-	.setName('buscar')
+const searchCoupons = new SlashCommandBuilder()
+	.setName('buscarcupones')
 	.setDescription('Buscar cupones de una tienda!')
 	.addStringOption(option =>
 		option
-			.setName('tienda')
-			.setDescription('Nombre de la tienda a buscar!')
+			.setName('nombretienda')
+			.setDescription('Nombre de la tienda de la que buscas cupones!')
 			.setRequired(true));
 
-const agregartienda = new SlashCommandBuilder()
+const searchStores = new SlashCommandBuilder()
+	.setName('buscartiendas')
+	.setDescription('Buscar tiendas en el cuponero!')
+	.addStringOption(option =>
+		option
+			.setName('nombretienda')
+			.setDescription('Nombre de la tienda a buscar!')
+			.setRequired(false));
+
+const addStore = new SlashCommandBuilder()
 	.setName('agregartienda')
 	.setDescription('Agregar una nueva tienda!')
 	.addStringOption(option =>
@@ -25,7 +34,7 @@ const agregartienda = new SlashCommandBuilder()
 			.setDescription('Link de la tienda a agregar!')
 			.setRequired(false));
 
-const agregarcupon = new SlashCommandBuilder()
+const addCoupon = new SlashCommandBuilder()
 	.setName('agregarcupon')
 	.setDescription('Agregar un nuevo cupon a una tienda!')
 	.addStringOption(option =>
@@ -50,9 +59,10 @@ const agregarcupon = new SlashCommandBuilder()
 			.setRequired(false));
 
 const commands = [
-	buscar,
-	agregartienda,
-	agregarcupon,
+	searchStores,
+	searchCoupons,
+	addStore,
+	addCoupon,
 ]
 	.map(command => command.toJSON());
 

@@ -8,8 +8,8 @@ class Command {
 		Command.reply(interaction, 'Respuesta al comando no definida');
 	}
 
-	static reply(interaction, content) {
-		interaction.reply(content)
+	static async reply(interaction, content) {
+		await interaction.reply(content)
 			.then()
 			.catch(console.err);
 	}

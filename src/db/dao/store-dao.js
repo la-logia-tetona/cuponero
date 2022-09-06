@@ -16,6 +16,10 @@ const findStoreByLowerName = `
 SELECT * FROM store WHERE lower(name) LIKE lower($1);
 `;
 
+const findStoreNameLike = `
+SELECT * FROM store WHERE $1::text IS NULL OR lower(name) LIKE concat('%',lower($1),'%');
+`;
+
 class StoreDAO extends DAO {
 	constructor() {
 		super();
@@ -40,6 +44,10 @@ class StoreDAO extends DAO {
 
 	async findStoreByName(store_name) {
 		return this.query(findStoreByLowerName, [store_name]);
+	}
+
+	async findStoreNameLike(store_name) {
+		return this.query(findStoreNameLike, [store_name]);
 	}
 }
 
