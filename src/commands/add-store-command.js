@@ -18,9 +18,7 @@ class AddStoreCommand extends Command {
 				Command.reply(interaction, message);
 			}
 			else {
-				(await this.addStoreDAO.addStore(storeName, storeLink)) ?
-					Command.reply(interaction, storeName + ' se agrego exitosamente.') :
-					Command.reply(interaction, 'Ocurrio un error al intentar agregar ' + storeName);
+				Command.reply(interaction, (await this.addStoreDAO.addStore(storeName, storeLink)));
 			}
 		}
 		else {

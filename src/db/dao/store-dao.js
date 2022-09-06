@@ -12,8 +12,8 @@ const getStoreById = `
 SELECT * FROM store WHERE id == $1;
 `;
 
-const findStoreByName = `
-SELECT * FROM store WHERE name LIKE $1;
+const findStoreByLowerName = `
+SELECT * FROM store WHERE lower(name) LIKE lower($1);
 `;
 
 class StoreDAO extends DAO {
@@ -22,9 +22,16 @@ class StoreDAO extends DAO {
 	}
 
 	async addStore(name, link) {
-		return link ?
+		const storesByName = await this.query(findStoreByLowerName, [name]);
+		if (storesByName && storesByName.length > 0) {
+			return 'No se puede agregar una tienda con el nombre ' + name + ' ya que existe ' + storesByName[0].name;
+		}
+		return (link ?
 			this.query(addStoreWithLink, [name, link]) :
-			this.query(addStore, [name]);
+			this.query(addStore, [name])
+		) ?
+			'La tienda ' + name + ' se agrego exitosamente' :
+			'Ocurrio un error al agregar la tienda ' + name;
 	}
 
 	async getStoreById(store_id) {
@@ -32,7 +39,7 @@ class StoreDAO extends DAO {
 	}
 
 	async findStoreByName(store_name) {
-		return this.query(findStoreByName, [store_name]);
+		return this.query(findStoreByLowerName, [store_name]);
 	}
 }
 
