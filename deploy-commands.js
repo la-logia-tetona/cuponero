@@ -46,7 +46,7 @@ const agregarcupon = new SlashCommandBuilder()
 	.addStringOption(option =>
 		option
 			.setName('valido')
-			.setDescription('Fecha de vencimiento del cupon, si es que tiene!')
+			.setDescription('Vencimiento del cupon, si es que tiene! Formatos: DD/MM/YY, DD/MM/YYYY, DD-MM-YY o DD-MM-YYYY')
 			.setRequired(false));
 
 const commands = [

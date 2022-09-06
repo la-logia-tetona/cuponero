@@ -30,11 +30,10 @@ class CouponDAO extends DAO {
 	}
 
 	async addCoupon(store, code, date = null, description = null) {
-		const formattedDate = date ? date.toSQLDate() : null ;
 		if (isNumber(store)) {
 			const toAddCoupon = await this.storeDAO.getStoreById(store);
 			if (toAddCoupon && toAddCoupon.length === 1) {
-				const answer = await this.query(addCoupon, [store, code, formattedDate, description]);
+				const answer = await this.query(addCoupon, [store, code, date, description]);
 				if (answer) {
 					return 'Se agrego el cupon a la tienda';
 				}
@@ -55,7 +54,7 @@ class CouponDAO extends DAO {
 			if (byName.length === 1) {
 				const store_id = byName[0].id;
 				return (
-					await this.query(addCoupon, [store_id, code, formattedDate, description]) ?
+					await this.query(addCoupon, [store_id, code, date, description]) ?
 						'Se agrego el cupon a la tienda' :
 						'Ocurrio un error al intentar agregar el cupon'
 				);

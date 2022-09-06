@@ -19,7 +19,9 @@ class AddCouponCommand extends Command {
 				Command.reply(interaction, message);
 			}
 			else {
-				Command.reply(interaction, (await this.couponDAO.addCoupon(store, coupon, formatDate(valid_until), description)));
+				const formattedDate = valid_until ? formatDate(valid_until) : null;
+				const sqlDate = formattedDate ? formattedDate.toSQLDate() : null;
+				Command.reply(interaction, (await this.couponDAO.addCoupon(store, coupon, sqlDate, description)));
 			}
 		}
 		else {
@@ -29,7 +31,7 @@ class AddCouponCommand extends Command {
 
 	validateOptions(store, coupon, valid_until, description) {
 		if (!store || !coupon) return 'La tienda y el cupon son parametros obligatorios';
-		if (!isDate(valid_until)) return 'La fecha no esta en formato valido';
+		if (valid_until && !isDate(valid_until)) return 'La fecha no esta en formato valido';
 
 		return null;
 	}
