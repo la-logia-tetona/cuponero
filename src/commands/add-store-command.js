@@ -28,8 +28,8 @@ class AddStoreCommand extends Command {
 
 	validateOptions(name, link) {
 		if (!(name)) return 'El nombre de la tienda es obligatorio';
-		if (isNumber(name)) return 'No esta permitido que el nombre de la tienda sean solo numeros';
-		if (link !== null && !isValidHttpUrl(link)) return 'El link debe ser un link con HTTP o HTTPS valido';
+		if (isNumber(name)) return 'El nombre de la tienda no puede contener solamente números';
+		if (link !== null && !isValidHttpUrl(link)) return 'El link debe ser un link con HTTP o HTTPS válido';
 		return null;
 	}
 

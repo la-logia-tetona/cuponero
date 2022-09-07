@@ -12,7 +12,7 @@ class SearchStoreCommand extends Command {
 			const storeName = interaction.options.getString('nombretienda');
 			const stores = await this.storeDAO.findStoreNameLike(storeName);
 			if (!stores) {
-				Command.reply(interaction, 'Ocurrio un error al buscar las tiendas');
+				Command.reply(interaction, 'Ocurrió un error al buscar las tiendas');
 			}
 			else if (stores.length === 0) {
 				const message = storeName ?
