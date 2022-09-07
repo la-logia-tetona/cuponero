@@ -51,7 +51,7 @@ class CouponDAO extends DAO {
 		else {
 			const byName = await this.storeDAO.findStoreByName(store);
 			if (!byName) {
-				return 'Ocurrio un error al buscar tiendas con el nombre ' + store;
+				return 'Ocurrió un error al buscar tiendas con el nombre ' + store;
 			}
 
 			if (byName.length === 1) {
@@ -65,7 +65,7 @@ class CouponDAO extends DAO {
 				return 'No existe tienda con el nombre ' + store;
 			}
 			else {
-				return 'Existe mas de una tienda con el nombre ' + store;
+				return 'Existe más de una tienda con el nombre ' + store;
 			}
 		}
 	}
@@ -75,18 +75,18 @@ class CouponDAO extends DAO {
 		if (existCoupon) {
 			console.log(existCoupon);
 			return existCoupon[0].exist ?
-				'Ya existe el cupon en la tienda' : null;
+				'Ya existe el cupón en la tienda' : null;
 		}
 		else {
-			return 'Ocurrio un error al verificar los cupones de la tienda';
+			return 'Ocurrió un error al verificar los cupones de la tienda';
 		}
 	}
 
 	async doAddCoupon(store_id, code, date, description) {
 		return (
 			await this.query(addCoupon, [store_id, code, date, description]) ?
-				'Se agrego el cupon a la tienda' :
-				'Ocurrio un error al intentar agregar el cupon'
+				'Se agregó el cupón a la tienda' :
+				'Ocurrió un error al intentar agregar el cupón'
 		);
 	}
 }

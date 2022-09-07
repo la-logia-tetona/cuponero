@@ -30,8 +30,8 @@ class AddCouponCommand extends Command {
 	}
 
 	validateOptions(store, coupon, valid_until, description) {
-		if (!store || !coupon) return 'La tienda y el cupon son parametros obligatorios';
-		if (valid_until && !isDate(valid_until)) return 'La fecha no esta en formato valido';
+		if (!store || !coupon) return 'La tienda y el cupón son parámetros obligatorios';
+		if (valid_until && !isDate(valid_until)) return 'La fecha no está en formato válido';
 
 		return null;
 	}

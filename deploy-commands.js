@@ -36,26 +36,26 @@ const addStore = new SlashCommandBuilder()
 
 const addCoupon = new SlashCommandBuilder()
 	.setName('agregarcupon')
-	.setDescription('Agregar un nuevo cupon a una tienda!')
+	.setDescription('Agregar un nuevo cupón a una tienda existente!')
 	.addStringOption(option =>
 		option
 			.setName('tienda')
-			.setDescription('Nombre de la tienda a la que vas a agregar el cupon!')
+			.setDescription('Nombre de la tienda a la que vas a agregar el cupón!')
 			.setRequired(true))
 	.addStringOption(option =>
 		option
 			.setName('cupon')
-			.setDescription('Aqui pone el cupon!')
+			.setDescription('Aquí poné el cupón!')
 			.setRequired(true))
 	.addStringOption(option =>
 		option
 			.setName('descripcion')
-			.setDescription('Descripcion del cupon, no escribas el martin fierro!')
+			.setDescription('Descripción del cupón, no escribas el Martín Fierro!')
 			.setRequired(false))
 	.addStringOption(option =>
 		option
 			.setName('valido')
-			.setDescription('Vencimiento del cupon, si es que tiene! Formatos: DD/MM/YY, DD/MM/YYYY, DD-MM-YY o DD-MM-YYYY')
+			.setDescription('Vencimiento del cupón, si es que tiene! Formatos: DD/MM/YY, DD/MM/YYYY, DD-MM-YY o DD-MM-YYYY')
 			.setRequired(false));
 
 const commands = [

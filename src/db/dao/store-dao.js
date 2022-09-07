@@ -34,8 +34,8 @@ class StoreDAO extends DAO {
 			this.query(addStoreWithLink, [name, link]) :
 			this.query(addStore, [name])
 		) ?
-			'La tienda ' + name + ' se agrego exitosamente' :
-			'Ocurrio un error al agregar la tienda ' + name;
+			'La tienda ' + name + ' se agregó exitosamente' :
+			'Ocurrió un error al agregar la tienda ' + name;
 	}
 
 	async getStoreById(store_id) {

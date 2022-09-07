@@ -12,7 +12,7 @@ class SearchCouponCommand extends Command {
 			const storeName = interaction.options.getString('nombretienda');
 			const coupons = await this.couponDAO.findCoupons(storeName);
 			if (!coupons) {
-				Command.reply(interaction, 'Ocurrio un error al obtener los cupones para ' + storeName);
+				Command.reply(interaction, 'Ocurrió un error al obtener los cupones para ' + storeName);
 			}
 			else if (coupons.length === 0) {
 				Command.reply(interaction, 'No hay cupones para la tienda ' + storeName);
