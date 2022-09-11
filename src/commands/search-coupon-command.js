@@ -8,8 +8,8 @@ class SearchCouponCommand extends Command {
 	}
 
 	async handleInteraction(interaction) {
-		if (interaction.commandName === 'buscarcupones') {
-			const storeName = interaction.options.getString('nombretienda');
+		if (interaction.commandName === 'ver') {
+			const storeName = interaction.options.getString('tienda');
 			try {
 				const coupons = await this.couponDAO.findCoupons(storeName);
 				if (coupons.length === 0) {

@@ -8,8 +8,8 @@ class SearchStoreCommand extends Command {
 	}
 
 	async handleInteraction(interaction) {
-		if (interaction.commandName === 'buscartiendas') {
-			const storeName = interaction.options.getString('nombretienda');
+		if (interaction.commandName === 'buscar') {
+			const storeName = interaction.options.getString('tienda');
 			const stores = await this.storeDAO.findStoreNameLike(storeName);
 			if (!stores) {
 				Command.reply(interaction, 'Ocurrió un error al buscar las tiendas');

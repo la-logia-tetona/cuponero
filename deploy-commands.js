@@ -3,25 +3,25 @@ const { SlashCommandBuilder, Routes } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 
 const searchCoupons = new SlashCommandBuilder()
-	.setName('buscarcupones')
-	.setDescription('Buscar cupones de una tienda!')
+	.setName('ver')
+	.setDescription('Ver los cupones de una tienda!')
 	.addStringOption(option =>
 		option
-			.setName('nombretienda')
-			.setDescription('Nombre de la tienda de la que buscas cupones!')
+			.setName('tienda')
+			.setDescription('Nombre de la tienda de la que queres ver cupones!')
 			.setRequired(true));
 
 const searchStores = new SlashCommandBuilder()
-	.setName('buscartiendas')
+	.setName('buscar')
 	.setDescription('Buscar tiendas en el cuponero!')
 	.addStringOption(option =>
 		option
-			.setName('nombretienda')
-			.setDescription('Nombre de la tienda a buscar!')
+			.setName('tienda')
+			.setDescription('Nombre o parte del nombre de la tienda a buscar!')
 			.setRequired(false));
 
 const addStore = new SlashCommandBuilder()
-	.setName('agregartienda')
+	.setName('tienda')
 	.setDescription('Agregar una nueva tienda!')
 	.addStringOption(option =>
 		option
@@ -35,7 +35,7 @@ const addStore = new SlashCommandBuilder()
 			.setRequired(false));
 
 const addCoupon = new SlashCommandBuilder()
-	.setName('agregarcupon')
+	.setName('cupon')
 	.setDescription('Agregar un nuevo cupón a una tienda existente!')
 	.addStringOption(option =>
 		option

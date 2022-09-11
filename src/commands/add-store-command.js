@@ -10,7 +10,7 @@ class AddStoreCommand extends Command {
 	}
 
 	async handleInteraction(interaction) {
-		if (interaction.commandName === 'agregartienda') {
+		if (interaction.commandName === 'tienda') {
 			const storeName = interaction.options.getString('tienda');
 			const storeLink = interaction.options.getString('link');
 			const message = this.validateOptions(storeName, storeLink);

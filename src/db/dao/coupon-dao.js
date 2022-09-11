@@ -83,7 +83,6 @@ class CouponDAO extends DAO {
 	async checkIfCouponExist(store_id, code) {
 		const existCoupon = await this.query(existCouponInStore, [store_id, code]);
 		if (existCoupon) {
-			console.log(existCoupon);
 			return existCoupon[0].exist ?
 				'Ya existe el cupón en la tienda' : null;
 		}

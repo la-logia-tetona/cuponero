@@ -9,7 +9,7 @@ class AddCouponCommand extends Command {
 	}
 
 	async handleInteraction(interaction) {
-		if (interaction.commandName === 'agregarcupon') {
+		if (interaction.commandName === 'cupon') {
 			const store = interaction.options.getString('tienda');
 			const coupon = interaction.options.getString('cupon');
 			const valid_until = interaction.options.getString('valido');
