@@ -53,7 +53,7 @@ class SearchStoreCommand extends Command {
 	parseStoreRow(row) {
 		let store = '(' + String(row.id) + ') **' + String(row.name) + '**';
 		if (row.link) {
-			store = store.concat(' | ', row.link);
+			store = store.concat(' | <', row.link, '>');
 		}
 		return store;
 	}
