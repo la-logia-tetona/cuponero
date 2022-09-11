@@ -17,6 +17,12 @@ WHERE s.id = $1 AND
 	lower(c.code) LIKE lower($2);
 `;
 
+const existStoreWithName = `
+SELECT (count(s.id) = 1) as exist
+FROM store s
+WHERE lower(s.name) LIKE lower($1);
+`;
+
 const addCoupon = `
 INSERT INTO coupon (store_id, code, valid_until, description) VALUES ($1,$2,$3,$4);
 `;
@@ -28,14 +34,18 @@ class CouponDAO extends DAO {
 	}
 
 	async findCoupons(store) {
-		const queryResult = (await this.query(selectCoupons, [store]));
-		if (queryResult) {
-			return queryResult.map(row => {
-				row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString() : null;
-				return row;
-			});
+		const couponsResult = (await this.queryThrow(selectCoupons, [store]));
+		if (couponsResult.length === 0 && !(await this.existsStore(store))) {
+			throw 'No existe tienda con el nombre ' + store;
 		}
-		return null;
+		return couponsResult.map(row => {
+			row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString() : null;
+			return row;
+		});
+	}
+
+	async existsStore(store) {
+		return (await this.queryThrow(existStoreWithName, [store]))[0].exist;
 	}
 
 	async addCoupon(store, code, date = null, description = null) {
