@@ -39,7 +39,7 @@ class CouponDAO extends DAO {
 			throw 'No existe tienda con el nombre ' + store;
 		}
 		return couponsResult.map(row => {
-			row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString() : null;
+			row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
 			return row;
 		});
 	}
