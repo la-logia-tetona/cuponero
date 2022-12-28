@@ -50,28 +50,28 @@ class CouponDAO extends DAO {
 
 	async addCoupon(store, code, date = null, description = null) {
 		if (isNumber(store)) {
-			const toAddCoupon = await this.storeDAO.getStoreById(store);
-			if (toAddCoupon && toAddCoupon.length === 1) {
+			const storeById = await this.storeDAO.getStoreById(store);
+			if (storeById && storeById.length === 1) {
 				return await this.doAddCoupon(store, code, date, description);
 			}
 			else {
-				return 'No existe tienda con el id';
+				return 'No existe tienda con el id ' + store;
 			}
 		}
 		else {
-			const byName = await this.storeDAO.findStoreByName(store);
-			if (!byName) {
+			const storeByName = await this.storeDAO.findStoreByName(store);
+			if (!storeByName) {
 				return 'Ocurrió un error al buscar tiendas con el nombre ' + store;
 			}
 
-			if (byName.length === 1) {
-				const store_id = byName[0].id;
+			if (storeByName.length === 1) {
+				const store_id = storeByName[0].id;
 				const resultExistCoupon = await this.checkIfCouponExist(store_id, code);
 				return resultExistCoupon ?
 					resultExistCoupon :
 					await this.doAddCoupon(store_id, code, date, description);
 			}
-			else if (byName.length === 0) {
+			else if (storeByName.length === 0) {
 				return 'No existe tienda con el nombre ' + store;
 			}
 			else {
