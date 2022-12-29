@@ -58,11 +58,26 @@ const addCoupon = new SlashCommandBuilder()
 			.setDescription('Vencimiento del cupón, si es que tiene! Formatos: DD/MM/YY, DD/MM/YYYY, DD-MM-YY o DD-MM-YYYY')
 			.setRequired(false));
 
+const deleteCoupon = new SlashCommandBuilder()
+	.setName('borrar')
+	.setDescription('Elimina un cupón a una tienda!')
+	.addStringOption(option =>
+		option
+			.setName('tienda')
+			.setDescription('Nombre de la tienda a la que vas a agregar el cupón!')
+			.setRequired(true))
+	.addStringOption(option =>
+		option
+			.setName('cupon')
+			.setDescription('Aquí poné el cupón!')
+			.setRequired(true));
+
 const commands = [
 	searchStores,
 	searchCoupons,
 	addStore,
 	addCoupon,
+	deleteCoupon,
 ]
 	.map(command => command.toJSON());
 

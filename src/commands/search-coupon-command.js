@@ -1,5 +1,6 @@
 const { CouponDAO } = require('../db/dao/coupon-dao');
 const { Command } = require('./command');
+const { isNumber } = require('../utils/number');
 
 class SearchCouponCommand extends Command {
 	constructor(command) {
@@ -9,14 +10,15 @@ class SearchCouponCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'ver') {
-			const storeName = interaction.options.getString('tienda');
+			const storeInput = interaction.options.getString('tienda');
+			const storeIsNumber = isNumber(storeInput);
 			try {
-				const coupons = await this.couponDAO.findCoupons(storeName);
+				const coupons = await this.couponDAO.findCoupons(storeInput, storeIsNumber);
 				if (coupons.length === 0) {
-					Command.reply(interaction, 'No hay cupones para la tienda ' + storeName);
+					Command.reply(interaction, 'No hay cupones para la tienda ' + storeInput);
 				}
 				else {
-					await Command.reply(interaction, 'Cupones de **' + storeName + '**');
+					await Command.reply(interaction, `Cupones de ${storeIsNumber ? 'la **Tienda ID' : '**'} ${storeInput}**`);
 					this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
 				}
 			}

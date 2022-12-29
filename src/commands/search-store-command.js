@@ -10,30 +10,30 @@ class SearchStoreCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'buscar') {
-			const storeName = interaction.options.getString('tienda');
-			let stores = null;
-			if (isNumber(storeName)) {
-				stores = await this.storeDAO.getStoreById(storeName);
-			}
-			else {
-				stores = await this.storeDAO.findStoreNameLike(storeName);
-			}
+			const storeInput = interaction.options.getString('tienda');
+
+			const storeIsNumber = isNumber(storeInput);
+
+			const stores = storeIsNumber ?
+				await this.storeDAO.getStoreById(storeInput) :
+				await this.storeDAO.findStoreNameLike(storeInput);
+
 			if (!stores) {
 				Command.reply(interaction, 'Ocurrió un error al buscar las tiendas');
 			}
 			else if (stores.length === 0) {
-				const message = isNumber(storeName) ?
-					'No existen tiendas con ID ' + storeName :
-					storeName ?
-						'No existen tiendas con nombre parecido a ' + storeName :
+				const message = storeIsNumber ?
+					'No existen tiendas con ID ' + storeInput :
+					storeInput ?
+						'No existen tiendas con nombre parecido a ' + storeInput :
 						'No hay tiendas en el cuponero';
 				Command.reply(interaction, message);
 			}
 			else {
-				const message = isNumber(storeName) ?
-					'Tienda con ID ' + storeName :
-					storeName ?
-						'Tiendas con nombre parecido a ' + storeName :
+				const message = storeIsNumber ?
+					'Tienda con ID ' + storeInput :
+					storeInput ?
+						'Tiendas con nombre parecido a ' + storeInput :
 						'Listando todas las tiendas del cuponero';
 				await Command.reply(interaction, message);
 				this.toReplyStrings(stores).forEach(replyString => interaction.channel.send(replyString));
