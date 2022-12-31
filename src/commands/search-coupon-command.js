@@ -18,8 +18,7 @@ class SearchCouponCommand extends Command {
 					Command.reply(interaction, 'No hay cupones para la tienda ' + storeInput);
 				}
 				else {
-					await Command.reply(interaction, `Cupones de ${storeIsNumber ? `la **Tienda ID ${storeInput} con Nombre ` : '**'} 
-          ${storeIsNumber ? tiendaName : storeInput}**`);
+					await Command.reply(interaction, `Cupones de ${storeIsNumber ? `la Tienda ID **${storeInput}** con Nombre**` : '**'} ${storeIsNumber ? tiendaName : storeInput}**`);
 					this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
 				}
 			}
