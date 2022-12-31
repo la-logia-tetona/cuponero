@@ -10,7 +10,7 @@ WHERE lower(s.name) LIKE lower($1) AND c.deleted = false;
 `;
 
 const selectCouponsByID = `
-SELECT c.id, c.code, c.valid_until, c.description 
+SELECT c.id, c.code, c.valid_until, c.description, s.name 
 FROM coupon c
 JOIN public.store s ON s.id = c.store_id
 WHERE s.id = $1 AND c.deleted = false;
@@ -60,10 +60,17 @@ class CouponDAO extends DAO {
 		if (couponsResult.length === 0 && !(await this.existsStore(store, booleanValue))) {
 			throw 'No existe tienda con el nombre ' + store;
 		}
-		return couponsResult.map(row => {
-			row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
-			return row;
-		});
+		return booleanValue ?
+			{ coupons: couponsResult.map(row => {
+				row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
+				return row;
+			}), tiendaName: couponsResult[0].name }
+			: {
+				coupons: couponsResult.map(row => {
+					row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
+					return row;
+				}), tiendaName: null,
+			};
 	}
 
 	async existsStore(store, booleanValue) {

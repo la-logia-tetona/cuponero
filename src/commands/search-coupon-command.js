@@ -13,12 +13,13 @@ class SearchCouponCommand extends Command {
 			const storeInput = interaction.options.getString('tienda');
 			const storeIsNumber = isNumber(storeInput);
 			try {
-				const coupons = await this.couponDAO.findCoupons(storeInput, storeIsNumber);
+				const { coupons, tiendaName } = await this.couponDAO.findCoupons(storeInput, storeIsNumber);
 				if (coupons.length === 0) {
 					Command.reply(interaction, 'No hay cupones para la tienda ' + storeInput);
 				}
 				else {
-					await Command.reply(interaction, `Cupones de ${storeIsNumber ? 'la **Tienda ID' : '**'} ${storeInput}**`);
+					await Command.reply(interaction, `Cupones de ${storeIsNumber ? `la **Tienda ID ${storeInput} con Nombre ` : '**'} 
+          ${storeIsNumber ? tiendaName : storeInput}**`);
 					this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
 				}
 			}
