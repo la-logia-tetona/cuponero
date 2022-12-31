@@ -116,15 +116,15 @@ class CouponDAO extends DAO {
 		}
 
 		const store_id = stores[0].id;
-		const { message, cupon } = await this.checkIfCouponExist(store_id, code);
+		const { message, cupon } = await this.checkIfCouponExist(true, store_id, code);
 		return cupon ?
 			await this.doDeleteCoupon(cupon.id) :
 			message ?
 				message :
-				'Exploto todo :3';
+				'El cupon que intentas eliminar no existe, revisa los datos e intenta nuevamente';
 	}
 
-	async checkIfCouponExist(store_id, code, date, description) {
+	async checkIfCouponExist(boolean = false, store_id, code, date, description) {
 		const existCoupon = await this.query(existCouponInStore, [store_id, code]);
 		if (!existCoupon) {
 			return { message:'Ocurrió un error al verificar los cupones de la tienda', cupon: null };
@@ -134,6 +134,11 @@ class CouponDAO extends DAO {
 		}
 		if (!existCoupon[0].deleted) {
 			return { message: 'Ya existe el cupón en la tienda', cupon: existCoupon[0] };
+		}
+		if (boolean && existCoupon[0].deleted) {
+			return {
+				message: 'El Cupon ya estaba Eliminado', cupon:null,
+			};
 		}
 		const resultRestore = await this.doRestoreCoupon(existCoupon[0].id, date, description);
 		return {

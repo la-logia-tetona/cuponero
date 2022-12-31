@@ -1,6 +1,9 @@
 const { CouponDAO } = require('../db/dao/coupon-dao');
 const { Command } = require('./command');
 
+const { CheckPermissions } = require('../utils/permissions');
+
+
 class DeleteCouponCommand extends Command {
 	constructor(command) {
 		super(command);
@@ -9,6 +12,10 @@ class DeleteCouponCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'borrar') {
+			const { checked, checkedMessage } = CheckPermissions(interaction);
+			if (!checked) {
+				return Command.reply(interaction, checkedMessage);
+			}
 			const store = interaction.options.getString('tienda');
 			const coupon = interaction.options.getString('cupon');
 			const message = this.validateOptions(store, coupon);
