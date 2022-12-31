@@ -94,7 +94,7 @@ class CouponDAO extends DAO {
 		}
 
 		const store_id = stores[0].id;
-		const { message } = await this.checkIfCouponExist(store_id, code, date, description);
+		const { message } = await this.checkIfCouponExist(false, store_id, code, date, description);
 		return message ?
 			message :
 			await this.doAddCoupon(store_id, code, date, description);
@@ -124,7 +124,7 @@ class CouponDAO extends DAO {
 				'El cupon que intentas eliminar no existe, revisa los datos e intenta nuevamente';
 	}
 
-	async checkIfCouponExist(boolean = false, store_id, code, date, description) {
+	async checkIfCouponExist(boolean, store_id, code, date, description) {
 		const existCoupon = await this.query(existCouponInStore, [store_id, code]);
 		if (!existCoupon) {
 			return { message:'Ocurrió un error al verificar los cupones de la tienda', cupon: null };
