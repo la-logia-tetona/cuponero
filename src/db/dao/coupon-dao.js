@@ -137,7 +137,7 @@ class CouponDAO extends DAO {
 		}
 		if (boolean && existCoupon[0].deleted) {
 			return {
-				message: 'El Cupon ya estaba Eliminado', cupon:null,
+				message: 'El cupon ya estaba eliminado', cupon:null,
 			};
 		}
 		const resultRestore = await this.doRestoreCoupon(existCoupon[0].id, date, description);
@@ -157,14 +157,14 @@ class CouponDAO extends DAO {
 	async doRestoreCoupon(cupon_id, date, description) {
 		return (
 			await this.query(restoreCoupon, [cupon_id, date, description]) ?
-				'El Cupon estaba eliminado, y se restauro con exito' :
+				'El cupon estaba eliminado, y se restauro con exito' :
 				'Ocurrió un error al intentar agregar el cupón'
 		);
 	}
 	async doDeleteCoupon(cupon_id) {
 		return (
 			await this.query(delteCoupon, [cupon_id]) ?
-				'Se elimino el cupón a la tienda' :
+				'Se elimino el cupón de la tienda' :
 				'Ocurrió un error al intentar agregar el cupón'
 		);
 	}

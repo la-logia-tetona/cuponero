@@ -64,12 +64,12 @@ const deleteCoupon = new SlashCommandBuilder()
 	.addStringOption(option =>
 		option
 			.setName('tienda')
-			.setDescription('Nombre de la tienda a la que vas a agregar el cupón!')
+			.setDescription('Nombre de la tienda de la que deseas eliminar un cupón!')
 			.setRequired(true))
 	.addStringOption(option =>
 		option
 			.setName('cupon')
-			.setDescription('Aquí poné el cupón!')
+			.setDescription('Aquí poné el cupón a eliminar!')
 			.setRequired(true));
 
 const commands = [
