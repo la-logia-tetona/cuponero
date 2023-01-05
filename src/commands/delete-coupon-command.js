@@ -12,18 +12,24 @@ class DeleteCouponCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'borrar') {
-			const { checked, checkedMessage } = CheckPermissions(interaction);
-			if (!checked) {
-				return Command.reply(interaction, checkedMessage);
+			try {
+
+				const { isChecked, errorMessagePermision } = CheckPermissions(interaction);
+				if (!isChecked) {
+					throw new Error(errorMessagePermision);
+				}
+				const store = interaction.options.getString('tienda');
+				const coupon = interaction.options.getString('cupon');
+
+				const errorMessage = this.validateOptions(store, coupon);
+				if (errorMessage) {
+					throw new Error(errorMessage);
+				}
+				const result = await this.couponDAO.deleteCoupon(store, coupon);
+				Command.reply(interaction, result);
 			}
-			const store = interaction.options.getString('tienda');
-			const coupon = interaction.options.getString('cupon');
-			const message = this.validateOptions(store, coupon);
-			if (message) {
-				Command.reply(interaction, message);
-			}
-			else {
-				Command.reply(interaction, (await this.couponDAO.deleteCoupon(store, coupon)));
+			catch (error) {
+				Command.reply(interaction, error.message);
 			}
 		}
 		else {

@@ -2,14 +2,14 @@ const { isNumber } = require('../../utils/number');
 const { DAO } = require('./dao');
 const { StoreDAO } = require('./store-dao');
 
-const selectCoupons = `
+const selectCouponsByStoreName = `
 SELECT c.id, c.code, c.valid_until, c.description
 FROM coupon c
 JOIN public.store s ON s.id = c.store_id
 WHERE lower(s.name) LIKE lower($1) AND c.deleted = false;
 `;
 
-const selectCouponsByID = `
+const selectCouponsByStoreId = `
 SELECT c.id, c.code, c.valid_until, c.description, s.name 
 FROM coupon c
 JOIN public.store s ON s.id = c.store_id
@@ -23,14 +23,14 @@ JOIN store s ON s.id = c.store_id
 WHERE s.id = $1 AND lower(c.code) LIKE lower($2);
 `;
 
-const existStoreWithName = `
-SELECT (count(s.id) = 1) as exist
+const findStoreWithName = `
+SELECT *
 FROM store s
 WHERE lower(s.name) LIKE lower($1);
 `;
 
-const existStoreWithID = `
-SELECT (count(s.id) = 1) as exist
+const findStoreWithId = `
+SELECT *
 FROM store s
 WHERE s.id = $1;
 `;
@@ -39,7 +39,7 @@ const addCoupon = `
 INSERT INTO coupon (store_id, code, valid_until, description) VALUES ($1,$2,$3,$4);
 `;
 
-const delteCoupon = `
+const deleteCoupon = `
 UPDATE coupon SET deleted = true WHERE id = $1;
 `;
 
@@ -53,30 +53,26 @@ class CouponDAO extends DAO {
 		this.storeDAO = new StoreDAO();
 	}
 
-	async findCoupons(store, booleanValue) {
-		const couponsResult = booleanValue ?
-			await this.queryThrow(selectCouponsByID, [store]) :
-			await this.queryThrow(selectCoupons, [store]) ;
-		if (couponsResult.length === 0 && !(await this.existsStore(store, booleanValue))) {
-			throw 'No existe tienda con el nombre ' + store;
-		}
-		return booleanValue ?
-			{ coupons: couponsResult.map(row => {
-				row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
-				return row;
-			}), tiendaName: couponsResult[0].name }
-			: {
-				coupons: couponsResult.map(row => {
-					row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
-					return row;
-				}), tiendaName: null,
-			};
-	}
+	async findCoupons(store, storeIsNumber) {
 
-	async existsStore(store, booleanValue) {
-		return booleanValue ?
-			(await this.queryThrow(existStoreWithID, [store]))[0].exist :
-			(await this.queryThrow(existStoreWithName, [store]))[0].exist;
+		const storeExist = await this.existsStore(store, storeIsNumber);
+		if (!storeExist || !storeExist.length) {
+			throw new Error(`No existe tienda con el ${storeIsNumber ? `ID **${store}**` : `nombre **${store}**`}`);
+		}
+
+		const coupons = storeIsNumber ?
+			await this.query(selectCouponsByStoreId, [store]) :
+			await this.query(selectCouponsByStoreName, [store]) ;
+
+		if (!coupons || !coupons.length) {
+			throw new Error(`No existen cupones para la tienda con ${storeIsNumber ? `ID **${store}**` : `nombre **${store}**`}`);
+		}
+
+		return { coupons: coupons.map(row => {
+			row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
+			return row;
+		}), storeName: storeExist[0]?.name };
+
 	}
 
 	async addCoupon(store, code, date = null, description = null) {
@@ -86,19 +82,28 @@ class CouponDAO extends DAO {
 			await this.storeDAO.getStoreById(store) :
 			await this.storeDAO.findStoreByName(store);
 
-		if (stores.length === 0) {
-			return `No existe tienda con el ${storeIsNumber ? 'ID' : 'nombre'} ${store}`;
+		if (!stores || !stores.length) {
+			throw new Error(`No existe tienda con el ${storeIsNumber ? 'ID' : 'nombre'} ** ${store}**`);
 		}
 		if (stores.length > 1) {
-			return `Existe más de una tienda con el ${storeIsNumber ? 'ID' : 'nombre'} ${store}`;
+			throw new Error(`Existe más de una tienda con el ${storeIsNumber ? 'ID' : 'nombre'} ** ${store}**`);
 		}
 
 		const store_id = stores[0].id;
-		const { message } = await this.checkIfCouponExist(false, store_id, code, date, description);
-		return message ?
-			message :
-			await this.doAddCoupon(store_id, code, date, description);
 
+		const { errorMessage, cupon } = await this.checkIfCouponExist(store_id, code, date, description);
+
+		if (errorMessage) {
+			throw new Error(errorMessage);
+		}
+
+		if (cupon) {
+			const resultRestore = await this.doRestoreCoupon(cupon.id, date, description);
+			return resultRestore;
+		}
+
+		const result = await this.doAddCoupon(store_id, code, date, description);
+		return result;
 	}
 
 	async deleteCoupon(store, code) {
@@ -116,33 +121,45 @@ class CouponDAO extends DAO {
 		}
 
 		const store_id = stores[0].id;
-		const { message, cupon } = await this.checkIfCouponExist(true, store_id, code);
-		return cupon ?
-			await this.doDeleteCoupon(cupon.id) :
-			message ?
-				message :
-				'El cupon que intentas eliminar no existe, revisa los datos e intenta nuevamente';
+		const { errorMessage, cupon } = await this.checkIfCouponExist(store_id, code, true);
+
+		if (!cupon) {
+			if (!errorMessage) {
+				throw new Error('El cupon que intentas eliminar no existe, revisa los datos e intenta nuevamente');
+			}
+			throw new Error(errorMessage);
+		}
+		const result = await this.doDeleteCoupon(cupon.id);
+		return result;
 	}
 
-	async checkIfCouponExist(boolean, store_id, code, date, description) {
+	async existsStore(store, storeIsNumber) {
+		return storeIsNumber ?
+			await this.query(findStoreWithId, [store]) :
+			await this.query(findStoreWithName, [store]);
+	}
+
+
+	async checkIfCouponExist(store_id, code, isDeleted = false) {
 		const existCoupon = await this.query(existCouponInStore, [store_id, code]);
+
 		if (!existCoupon) {
-			return { message:'Ocurrió un error al verificar los cupones de la tienda', cupon: null };
+			return { errorMessage:'Ocurrió un error al verificar los cupones de la tienda', cupon: null };
 		}
 		if (!existCoupon.length) {
-			return { message: null, cupon: null };
+			return { errorMessage: null, cupon: null };
 		}
 		if (!existCoupon[0].deleted) {
-			return { message: 'Ya existe el cupón en la tienda', cupon: existCoupon[0] };
+			return { errorMessage: 'Ya existe el cupón en la tienda', cupon: existCoupon[0] };
 		}
-		if (boolean && existCoupon[0].deleted) {
+		if (isDeleted && existCoupon[0].deleted) {
 			return {
-				message: 'El cupon ya estaba eliminado', cupon:null,
+				errorMessage: 'El cupon ya estaba eliminado', cupon:null,
 			};
 		}
-		const resultRestore = await this.doRestoreCoupon(existCoupon[0].id, date, description);
+
 		return {
-			message: resultRestore, cupon:null,
+			errorMessage: null, cupon:existCoupon[0],
 		};
 	}
 
@@ -158,14 +175,14 @@ class CouponDAO extends DAO {
 		return (
 			await this.query(restoreCoupon, [cupon_id, date, description]) ?
 				'El cupon estaba eliminado, y se restauro con exito' :
-				'Ocurrió un error al intentar agregar el cupón'
+				'Ocurrió un error al intentar restaurar el cupón'
 		);
 	}
 	async doDeleteCoupon(cupon_id) {
 		return (
-			await this.query(delteCoupon, [cupon_id]) ?
+			await this.query(deleteCoupon, [cupon_id]) ?
 				'Se elimino el cupón de la tienda' :
-				'Ocurrió un error al intentar agregar el cupón'
+				'Ocurrió un error al intentar eliminar el cupón'
 		);
 	}
 }

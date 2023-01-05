@@ -10,33 +10,33 @@ class SearchStoreCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'buscar') {
-			const storeInput = interaction.options.getString('tienda');
+			try {
+				const storeInput = interaction.options.getString('tienda');
 
-			const storeIsNumber = isNumber(storeInput);
+				const storeIsNumber = isNumber(storeInput);
 
-			const stores = storeIsNumber ?
-				await this.storeDAO.getStoreById(storeInput) :
-				await this.storeDAO.findStoreNameLike(storeInput);
+				const stores = storeIsNumber ?
+					await this.storeDAO.getStoreById(storeInput) :
+					await this.storeDAO.findStoreNameLike(storeInput);
 
-			if (!stores) {
-				Command.reply(interaction, 'Ocurrió un error al buscar las tiendas');
-			}
-			else if (stores.length === 0) {
-				const message = storeIsNumber ?
-					'No existen tiendas con ID ' + storeInput :
-					storeInput ?
-						'No existen tiendas con nombre parecido a ' + storeInput :
-						'No hay tiendas en el cuponero';
-				Command.reply(interaction, message);
-			}
-			else {
-				const message = storeIsNumber ?
-					'Tienda con ID ' + storeInput :
-					storeInput ?
-						'Tiendas con nombre parecido a ' + storeInput :
-						'Listando todas las tiendas del cuponero';
+				if (!stores) {
+					throw new Error('Ocurrió un error al buscar las tiendas');
+				}
+				if (!stores.length) {
+					const message = storeInput ?
+						`No existen tiendas con ${storeIsNumber ? `ID **${storeInput}**` : `nombre parecido a **${storeInput}**`}`
+						: 'No hay tiendas en el cuponero';
+					throw new Error(message);
+				}
+
+				const message = storeInput ?
+					`Tienda con ${storeIsNumber ? `ID **${storeInput}**` : `nombre parecido a **${storeInput}**`}`
+					: 'Listando todas las tiendas del cuponero';
 				await Command.reply(interaction, message);
 				this.toReplyStrings(stores).forEach(replyString => interaction.channel.send(replyString));
+			}
+			catch (error) {
+				Command.reply(interaction, error.message);
 			}
 		}
 		else {

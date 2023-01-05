@@ -11,14 +11,20 @@ class AddStoreCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'tienda') {
-			const storeName = interaction.options.getString('tienda');
-			const storeLink = interaction.options.getString('link');
-			const message = this.validateOptions(storeName, storeLink);
-			if (message) {
-				Command.reply(interaction, message);
+			try {
+				const storeName = interaction.options.getString('tienda');
+				const storeLink = interaction.options.getString('link');
+
+				const errorMessage = this.validateOptions(storeName, storeLink);
+				if (errorMessage) {
+					throw new Error(errorMessage);
+				}
+
+				const result = await this.addStoreDAO.addStore(storeName, storeLink);
+				Command.reply(interaction, result);
 			}
-			else {
-				Command.reply(interaction, (await this.addStoreDAO.addStore(storeName, storeLink)));
+			catch (error) {
+				Command.reply(interaction, error.message);
 			}
 		}
 		else {

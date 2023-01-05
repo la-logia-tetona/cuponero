@@ -9,21 +9,12 @@ class DAO {
 		try {
 			return (await this.pool.query(query, params)).rows;
 		}
-		catch (err) {
-			console.log(err);
-			return null;
+		catch (error) {
+			console.log(error);
+			return false;
 		}
 	}
 
-	async queryThrow(query, params) {
-		try {
-			return (await this.pool.query(query, params)).rows;
-		}
-		catch (err) {
-			console.log(err);
-			throw 'Ocurrio un error.';
-		}
-	}
 }
 
 exports.DAO = DAO;

@@ -2,9 +2,9 @@ const rolesAutorizados = ['teton cuponero'];
 
 function CheckPermissions(interaction) {
 	if (interaction.member && !(interaction.member.roles.cache.some(role => rolesAutorizados.includes(role.name.toLowerCase())))) {
-		return { checked: false, checkedMessage: 'No tienes permiso para usar este comando' };
+		return { isChecked: false, errorMessagePermision: 'No tienes permiso para usar este comando' };
 	}
-	return { checked: true, checkedMessage: null };
+	return { isChecked: true, errorMessagePermision: null };
 }
 
 exports.CheckPermissions = CheckPermissions;

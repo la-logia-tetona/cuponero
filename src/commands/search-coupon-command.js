@@ -10,20 +10,24 @@ class SearchCouponCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'ver') {
-			const storeInput = interaction.options.getString('tienda');
-			const storeIsNumber = isNumber(storeInput);
 			try {
-				const { coupons, tiendaName } = await this.couponDAO.findCoupons(storeInput, storeIsNumber);
-				if (coupons.length === 0) {
-					Command.reply(interaction, 'No hay cupones para la tienda ' + storeInput);
+				const storeInput = interaction.options.getString('tienda');
+				const storeIsNumber = isNumber(storeInput);
+
+				const { coupons, storeName } = await this.couponDAO.findCoupons(storeInput, storeIsNumber);
+
+				if (!coupons || !storeName) {
+					throw new Error('Ocurrio un error al obtener los cupones, intente nuevamente');
 				}
-				else {
-					await Command.reply(interaction, `Cupones de ${storeIsNumber ? `la Tienda ID **${storeInput}** con nombre**` : '**'} ${storeIsNumber ? tiendaName : storeInput}**`);
-					this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
-				}
+
+				const message = `Cupones de la tienda ${storeIsNumber ? `ID **${storeInput}** con nombre**`
+					: '**'} ${storeIsNumber ? storeName : storeInput}**`;
+				await Command.reply(interaction, message);
+				this.toReplyStrings(coupons).forEach(replyString => interaction.channel.send(replyString));
+
 			}
-			catch (err) {
-				Command.reply(interaction, err);
+			catch (error) {
+				Command.reply(interaction, error.message);
 			}
 		}
 		else {
