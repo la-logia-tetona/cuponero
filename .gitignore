@@ -1,2 +1,3 @@
 node_modules
 deploy/.env
+postgres-data
