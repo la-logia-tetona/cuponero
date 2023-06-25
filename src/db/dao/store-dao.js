@@ -17,7 +17,7 @@ SELECT * FROM store WHERE lower(name) LIKE lower($1);
 `;
 
 const findStoreNameLike = `
-SELECT * FROM store WHERE $1::text IS NULL OR lower(name) LIKE concat('%',lower($1),'%');
+SELECT * FROM store WHERE $1::text IS NULL OR lower(name) LIKE concat('%',lower($1),'%') ORDER BY name ASC;
 `;
 
 class StoreDAO extends DAO {
