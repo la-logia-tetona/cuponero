@@ -8,7 +8,7 @@ const searchCoupons = new SlashCommandBuilder()
 	.addStringOption(option =>
 		option
 			.setName('tienda')
-			.setDescription('Nombre de la tienda de la que queres ver cupones!')
+			.setDescription('Nombre de la tienda de la que querés ver cupones!')
 			.setRequired(true));
 
 const searchStores = new SlashCommandBuilder()

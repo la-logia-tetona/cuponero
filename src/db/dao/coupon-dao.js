@@ -36,7 +36,7 @@ class CouponDAO extends DAO {
 	async findCoupons(store) {
 		const couponsResult = (await this.queryThrow(selectCoupons, [store]));
 		if (couponsResult.length === 0 && !(await this.existsStore(store))) {
-			throw 'No existe tienda con el nombre ' + store;
+			throw 'No existe tienda con el nombre **' + store + '**';
 		}
 		return couponsResult.map(row => {
 			row.valid_until = row.valid_until ? row.valid_until.toLocaleDateString('es-AR') : null;
@@ -72,10 +72,10 @@ class CouponDAO extends DAO {
 					await this.doAddCoupon(store_id, code, date, description);
 			}
 			else if (byName.length === 0) {
-				return 'No existe tienda con el nombre ' + store;
+				return 'No existe tienda con el nombre **' + store + '**';
 			}
 			else {
-				return 'Existe más de una tienda con el nombre ' + store;
+				return 'Existe más de una tienda con el nombre **' + store + '**';
 			}
 		}
 	}
@@ -84,7 +84,7 @@ class CouponDAO extends DAO {
 		const existCoupon = await this.query(existCouponInStore, [store_id, code]);
 		if (existCoupon) {
 			return existCoupon[0].exist ?
-				'Ya existe el cupón en la tienda' : null;
+				'Ya existe el cupón **' + existCoupon + '** en la tienda' : null;
 		}
 		else {
 			return 'Ocurrió un error al verificar los cupones de la tienda';
@@ -94,7 +94,7 @@ class CouponDAO extends DAO {
 	async doAddCoupon(store_id, code, date, description) {
 		return (
 			await this.query(addCoupon, [store_id, code, date, description]) ?
-				'Se agregó el cupón a la tienda' :
+				'Se agregó el cupón **' + code + '** a la tienda ' + toAddCoupon :
 				'Ocurrió un error al intentar agregar el cupón'
 		);
 	}
