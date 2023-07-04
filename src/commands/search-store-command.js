@@ -1,5 +1,6 @@
 const { StoreDAO } = require('../db/dao/store-dao');
 const { Command } = require('./command');
+const { isNumber } = require('../utils/number');
 
 class SearchStoreCommand extends Command {
 	constructor(command) {
@@ -9,23 +10,33 @@ class SearchStoreCommand extends Command {
 
 	async handleInteraction(interaction) {
 		if (interaction.commandName === 'buscar') {
-			const storeName = interaction.options.getString('tienda');
-			const stores = await this.storeDAO.findStoreNameLike(storeName);
-			if (!stores) {
-				Command.reply(interaction, 'Ocurrió un error al buscar las tiendas');
-			}
-			else if (stores.length === 0) {
-				const message = storeName ?
-					'No existen tiendas con nombre parecido a ' + storeName :
-					'No hay tiendas en el cuponero';
-				Command.reply(interaction, message);
-			}
-			else {
-				const message = storeName ?
-					'Tiendas con nombre parecido a ' + storeName :
-					'Listando todas las tiendas del cuponero';
+			try {
+				const storeInput = interaction.options.getString('tienda');
+
+				const storeIsNumber = isNumber(storeInput);
+
+				const stores = storeIsNumber ?
+					await this.storeDAO.getStoreById(storeInput) :
+					await this.storeDAO.findStoreNameLike(storeInput);
+
+				if (!stores) {
+					throw new Error('Ocurrió un error al buscar las tiendas');
+				}
+				if (!stores.length) {
+					const message = storeInput ?
+						`No existen tiendas con ${storeIsNumber ? `ID **${storeInput}**` : `nombre parecido a **${storeInput}**`}`
+						: 'No hay tiendas en el cuponero';
+					throw new Error(message);
+				}
+
+				const message = storeInput ?
+					`Tienda con ${storeIsNumber ? `ID **${storeInput}**` : `nombre parecido a **${storeInput}**`}`
+					: 'Listando todas las tiendas del cuponero';
 				await Command.reply(interaction, message);
 				this.toReplyStrings(stores).forEach(replyString => interaction.channel.send(replyString));
+			}
+			catch (error) {
+				Command.reply(interaction, error.message);
 			}
 		}
 		else {
