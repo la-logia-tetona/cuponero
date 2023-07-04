@@ -28,14 +28,14 @@ class StoreDAO extends DAO {
 	async addStore(name, link) {
 		const storesByName = await this.query(findStoreByLowerName, [name]);
 		if (storesByName && storesByName.length > 0) {
-			return 'No se puede agregar una tienda con el nombre ' + name + ' ya que existe ' + storesByName[0].name;
+			return 'No se puede agregar una tienda con el nombre **' + name + '** porque ya existe **' + storesByName[0].name + '**';
 		}
 		return (link ?
 			this.query(addStoreWithLink, [name, link]) :
 			this.query(addStore, [name])
 		) ?
-			'La tienda ' + name + ' se agregó exitosamente' :
-			'Ocurrió un error al agregar la tienda ' + name;
+			'La tienda **' + name + '** se agregó exitosamente' :
+			'Ocurrió un error al agregar la tienda **' + name + '**';
 	}
 
 	async getStoreById(store_id) {
